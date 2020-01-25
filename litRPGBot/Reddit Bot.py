@@ -17,11 +17,12 @@ def check_comment(comment_id):
     f = open("comments_checked.txt", "r+")
     #Reads the text file, if file doesn't exist makes one
     comments_checked = f.read()
-    print(comments_checked)
+#    print(comments_checked)
     if comment_id not in comments_checked:
-        posts_checked = comments_checked.split("\n")
-        f = open("comments_checked.txt", "a")
-        comments_checked.append(comment_id)
+        f.close()
+        f = open("comments_checked.txt", "a+")
+        f.write(comment_id)
+        f.write("\n")
         f.close()
         return True
         #If comment ID is not in the file, adds it to the file & returns True
@@ -57,16 +58,23 @@ def parse_comments(comment):
 #I dunno what this does yet, I stole it. I think count is the line number in the referenced list?
 
 for submission in subreddit.hot(limit=1):
-#    if check_comment(comment.id) and check_flair(comment.flair):
 #If flair is 'request' and comment hasn't been done before...
 #        parse_comments(comment.body)
+    submission.comment_sort = 'new'
     print(submission.link_flair_text)
-    print(submission.comments)
-#    print(submission.comment)
-#    pprint.pprint(vars(submission))
+#    top_level_comments = submission.comments
+#    pprint.pprint(vars(top_level_comments))
+# Using these these two lines for debugging to check the comment IDs
+    for top_level_comments in submission.comments:
+        if check_comment(top_level_comments.id): # and check_flair(submission.link_flair_text):
+            print(top_level_comments.body)
+        else:
+            print("Comment Already Read")
+
+#        print(submission.comments)
 
 
 
 
 
-time.sleep(1500)
+#time.sleep(1500)
