@@ -1,26 +1,47 @@
 import praw
 import re
+import os
 import time
 import pprint
 import pdb
-import os
-# I don't think I need os or pdb anymore but keeping here just in case
+# I don't think I need pdb anymore but keeping here just in case
 
 
 # Imports stuff
 
-reddit = praw.Reddit('bot1')
-subreddit = reddit.subreddit("litRPG")
-# Sets up the reddit bot login and the subreddit called below
+def main():
+    # Sets up the reddit bot login and the subreddit called below
+    reddit = praw.Reddit('bot1')
+    subreddit = reddit.subreddit("litRPG")
+    for submission in subreddit.hot(limit=1):
+        #If flair is 'request' and comment hasn't been done before...
+        #        parse_comments(comment.body)
+        submission.comment_sort = 'new'
+        print(submission.link_flair_text)
+        #    top_level_comments = submission.comments
+        #    pprint.pprint(vars(top_level_comments))
+        # Using these these two lines for debugging to check the comment IDs
+        for top_level_comments in submission.comments:
+            if check_comment(top_level_comments.id): # and check_flair(submission.link_flair_text):
+                print(top_level_comments.body)
+            else:
+                print("Comment Already Read")
+
+    #        print(submission.comments)
+
 
 def check_comment(comment_id):
-    f = open("comments_checked.txt", "r+")
-    #Reads the text file, if file doesn't exist makes one
+    # Reads the text file, if file doesn't exist makes one
+    if not os.path.exists('./comments_checked.txt'):
+        f = open("./comments_checked.txt", "w+")
+    else:
+        f = open("./comments_checked.txt", "r+")
+
     comments_checked = f.read()
 #    print(comments_checked)
     if comment_id not in comments_checked:
         f.close()
-        f = open("comments_checked.txt", "a+")
+        f = open("./comments_checked.txt", "a+")
         f.write(comment_id)
         f.write("\n")
         f.close()
@@ -57,23 +78,9 @@ def parse_comments(comment):
         return count
 #I dunno what this does yet, I stole it. I think count is the line number in the referenced list?
 
-for submission in subreddit.hot(limit=1):
-#If flair is 'request' and comment hasn't been done before...
-#        parse_comments(comment.body)
-    submission.comment_sort = 'new'
-    print(submission.link_flair_text)
-#    top_level_comments = submission.comments
-#    pprint.pprint(vars(top_level_comments))
-# Using these these two lines for debugging to check the comment IDs
-    for top_level_comments in submission.comments:
-        if check_comment(top_level_comments.id): # and check_flair(submission.link_flair_text):
-            print(top_level_comments.body)
-        else:
-            print("Comment Already Read")
 
-#        print(submission.comments)
-
-
+if __name__ == "__main__":
+    main()
 
 
 
